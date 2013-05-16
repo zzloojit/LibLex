@@ -1,5 +1,9 @@
 #include "LibLex.h"
+#include <stdio.h>
 
+void lexError(const char *msg) {
+  fputs(msg, stderr);
+}
 Lex::Lex(char* buf, int length) {
   start = buf;
   cur = buf;
@@ -68,22 +72,107 @@ void  Lex::next() {
     scanNumber(10);
     break;
     
-  case ',':
-    len = ptr - cur; tok = COMMA; break;
-  case ';':
-    len = ptr - cur; tok = SEMI; break;
   case '(':
     len = ptr - cur; tok = LPAREN; break;
   case ')':
     len = ptr - cur; tok = RPAREN; break;
-  case '[':
-    len = ptr - cur; tok = LBRACKET; break;
-  case ']':
-    len = ptr - cur; tok = RBRACKET; break;
   case '{':
     len = ptr - cur; tok = LBRACE; break;
   case '}':
     len = ptr - cur; tok = RBRACE; break;
+  case '[':
+    len = ptr - cur; tok = LBRACKET; break;
+  case ']':
+    len = ptr - cur; tok = RBRACKET; break;
+  case ';':
+    len = ptr - cur; tok = SEMI; break;
+  case ',':
+    len = ptr - cur; tok = COMMA; break;
+  case '.':
+    len = ptr - cur; tok = DOT; break;
+  case '=':
+    if (*ptr == '=') {
+      len = 2; tok = EQEQ; break;
+    }
+    len = 1; tok = EQ; break;
+  case '>':
+    if (*ptr == '=') {
+      len = 2; tok = GTEQ; break;
+    }else if(*ptr = '>') {
+      if (ptr[1] == '=') {
+        len = 3; tok = GTGTEQ; break;
+      }
+      len = 2; tok = GTGT; break;
+    }
+    len = 1; tok = GT; break;
+    
+  case '<':
+    if (*ptr == '=') {
+      len = 2; tok = LTEQ; break;
+    }else if(*ptr == '<') {
+      if (ptr[1] == '=') {
+        len = 3; tok = LTLTEQ; break;
+      }
+      len = 2; tok = LTLT; break;
+    }
+    len = 1; tok = LT; break;
+  case '!':
+    if (*ptr == '=') {
+       len = 2; tok = BANGEQ; break;
+    }
+    len = 1; tok = BANG; break;
+  case '~':
+    len = 1; tok = TILDE; break;
+  case '?':
+    len = 1; tok = QUES; break;
+  case ':':
+    len = 1; tok = COLON; break;
+  case '#':
+    len = 1; tok = POUND; break;
+  case '&':
+    if (*ptr == '&'){
+      len = 2; tok = AMPAMP; break;
+    }else if (*ptr == '=') {
+      len = 2; tok = AMPEQ; break;
+    }
+    len = 1; tok = AMP; break;
+  case '|':
+    if (*ptr == '|') {
+      len = 2; tok = BARBAR; break;
+    }else if (*ptr == '=') {
+      len = 2; tok = BAREQ; break;
+    }
+    len = 1; tok = BAR; break;
+  case '+':
+    if (*ptr == '+') {
+      len = 2; tok = PLUSPLUS; break;
+    }else if (*ptr == '=') {
+      len = 2; tok = PLUSEQ; break;
+    }
+    len = 1; tok = PLUS; break;
+  case '-':
+    if (*ptr == '-') {
+      len = 2; tok = SUBSUB; break;
+    }else if (*ptr == '=') {
+      len = 2; tok = SUBEQ; break;
+    }
+    len = 1; tok = SUB; break;
+  case '*':
+    if (*ptr == '=') {
+      len = 2; tok = STAREQ; break;
+    }
+    len = 1; tok = STAR; break;
+  case '%':
+    if (*ptr == '=') {
+      len = 2; tok = PERCENTEQ; break;
+    }
+    len = 1; tok = PERCENT; break;
+  case '^':
+    if (*ptr == '=') {
+      len = 2; tok = CARETEQ; break;
+    }
+    len = 1; tok = CARET; break;
+
   case '/':
     ch = *ptr;
     if (ch == '/') {
@@ -113,6 +202,17 @@ void  Lex::next() {
       tok = SLASH;
     }
     break;
+  // case '\'':
+  //   ch = *++ptr;
+  //   if (ch == '\'') {
+  //     lexError("empty.char.lit");
+  //   }else {
+  //     if (ch == '\r' || ch == '\n')
+  //       lexError("illegal.line.end.in.char.lit");
+      
+  //   }
+  //   break;
+    
   case '\377':
     tok = EOF;
     len = 1;

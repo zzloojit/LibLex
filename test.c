@@ -1,3 +1,4 @@
-int a; // a b c
+int a;
 int b;
-int c;
+int c = a + b;
+a += b;
